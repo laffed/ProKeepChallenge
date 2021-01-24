@@ -68,13 +68,11 @@ function Login({navigation}: {navigation: NavProp}) {
     }, [])
   )
 
-
-
   return (
     <Formik
       initialValues={{
-        email: 'eve.holt@reqres.in',
-        password: 'cityslicka'
+        email: '',
+        password: ''
       }}
       validationSchema={LoginSchema}
       onSubmit={values => {onLogin(values)}}
@@ -105,6 +103,7 @@ function Login({navigation}: {navigation: NavProp}) {
             </Text>
             <View style={{marginVertical: 20}}>
               <Input
+                testID={'email'}
                 onChangeText={handleChange('email')}
                 onBlur={handleBlur('email')}
                 placeholder="Email"
@@ -117,6 +116,7 @@ function Login({navigation}: {navigation: NavProp}) {
               />
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <Input
+                  testID={'password'}
                   secureTextEntry={hidePassword}
                   onBlur={handleBlur('password')}
                   placeholder="Password"
