@@ -2,6 +2,7 @@ import React from 'react'
 import {View, Text, StyleSheet, Image, Alert, KeyboardAvoidingView, TouchableOpacity} from 'react-native';
 import {Input, Icon} from 'react-native-elements';
 import {useOvermind} from '../overmind';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {AuthStackParamList} from '../types';
 import {Formik} from 'formik';
@@ -10,6 +11,26 @@ import {SignUpSchema} from '../assets/validationSchemas';
 
 type NavProp = StackNavigationProp<AuthStackParamList, 'Signup'>;
 function Signup({navigation}: {navigation: NavProp}) {
+  const GlobalActions = useOvermind().actions.User;
+
+
+  const onSignup = async ({email, password}: {email: string; password: string}) => {
+    await fetch("https://reqres.in/api/register", {
+      method: 'POST',
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({email: email, password: password})
+    })
+      .then(async (response) => {
+        if (response.status === 200) {
+          await AsyncStorage.setItem('isLoggedIn', 'true')
+          await AsyncStorage.setItem('email', email)
+            .then(() => {GlobalActions.setLogin(email)})
+        }
+      })
+  }
 
   return (
     <Formik
@@ -19,7 +40,7 @@ function Signup({navigation}: {navigation: NavProp}) {
         confirmPassword: '',
       }}
       validationSchema={SignUpSchema}
-      onSubmit={values => {onLogin(values)}}
+      onSubmit={values => {onSignup(values)}}
     >
       {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
         <KeyboardAvoidingView
@@ -41,8 +62,8 @@ function Signup({navigation}: {navigation: NavProp}) {
               }}
               source={{uri: 'https://uploads-ssl.webflow.com/5e8630fc4ab55c2dd2699e05/5e86337294f87c645a70134a_prokeep-lockup-reversed.svg'}}
             />
-            <Text style={[styles.notice, {color: 'white'}]}>
-              {!errors.email && !errors.password && !errors.confirmPassword && 'Signup into the Greatest App in the World!'}
+            <Text style={[styles.notice, {color: 'white', marginBottom: 10}]}>
+              Signup into the Greatest App in the World!
             </Text>
             <Text style={[styles.notice, {color: 'red'}]}>
               {touched.email && errors.email}
@@ -91,7 +112,7 @@ function Signup({navigation}: {navigation: NavProp}) {
           <View style={{marginVertical: 20}}>
             <TouchableOpacity
               style={[styles.loginBtn]}
-              onPress={() => handleSubmit}
+              onPress={handleSubmit}
             >
               <Text
                 style={[

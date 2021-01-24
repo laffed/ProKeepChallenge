@@ -13,28 +13,42 @@ type NavProp = StackNavigationProp<AuthStackParamList, 'Login'>;
 
 
 function Login({navigation}: {navigation: NavProp}) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [localLoggedIn, setLocalLoggedIn] = useState(false);
   const [hidePassword, setHidePassword] = useState(true);
 
-  const GlobalState = useOvermind().state.User;
   const GlobalActions = useOvermind().actions.User;
 
   const setPasswordVisibility = () => {
     setHidePassword(!hidePassword);
   };
 
-  const onLogin = ({email, password}: {email: string, password: string}) => {
-    console.log(email)
+  const onLogin = async ({email, password}: {email: string, password: string}) => {
+    await fetch("https://reqres.in/api/login", {
+      method: 'POST',
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({email: email, password: password})
+    })
+      .then(async (response) => {
+        if (response.status === 200) {
+          await AsyncStorage.setItem('isLoggedIn', 'true')
+          await AsyncStorage.setItem('email', email)
+            .then(() => {GlobalActions.setLogin(email)})
+        }
+      })
   }
 
-  const checkUserLogin = () => {
-    AsyncStorage.getItem('isLoggedIn')
-      .then(isLoggedIn => {
+  const checkUserLogin = async () => {
+    await AsyncStorage.getItem('isLoggedIn')
+      .then(async isLoggedIn => {
         if (isLoggedIn === 'true') {
-          AsyncStorage.getItem('email')
-            .then(email => {GlobalActions.setUserSession(JSON.parse(email))});
+          await AsyncStorage.getItem('email')
+            .then(email => {
+              if (email && email.length > 0)
+                GlobalActions.setLogin(email)
+            });
         }
       });
   }
@@ -49,8 +63,8 @@ function Login({navigation}: {navigation: NavProp}) {
   return (
     <Formik
       initialValues={{
-        email: '',
-        password: ''
+        email: 'eve.holt@reqres.in',
+        password: 'cityslicka'
       }}
       validationSchema={LoginSchema}
       onSubmit={values => {onLogin(values)}}
@@ -76,8 +90,8 @@ function Login({navigation}: {navigation: NavProp}) {
               }}
               source={{uri: 'https://uploads-ssl.webflow.com/5e8630fc4ab55c2dd2699e05/5e86337294f87c645a70134a_prokeep-lockup-reversed.svg'}}
             />
-            <Text style={[styles.notice, {color: 'white'}]}>
-              {!errors.email && !errors.password && 'Login to the Greatest App in the World!'}
+            <Text style={[styles.notice, {color: 'white', marginBottom: 10}]}>
+              Login
             </Text>
             <Text style={[styles.notice, {color: 'red'}]}>
               {touched.email && errors.email}
@@ -85,7 +99,6 @@ function Login({navigation}: {navigation: NavProp}) {
             <Text style={[styles.notice, {color: 'red'}]}>
               {touched.password && errors.password}
             </Text>
-
             <View style={{marginVertical: 20}}>
               <Input
                 onChangeText={handleChange('email')}
@@ -93,7 +106,8 @@ function Login({navigation}: {navigation: NavProp}) {
                 placeholder="Email"
                 value={values.email}
                 inputStyle={[
-                  {fontSize: 16}
+                  {fontSize: 16},
+                  styles.input
                 ]}
                 placeholderTextColor="#999"
               />
@@ -133,7 +147,7 @@ function Login({navigation}: {navigation: NavProp}) {
           <View style={{marginVertical: 30}}>
             <TouchableOpacity
               style={[styles.loginBtn]}
-              onPress={() => handleSubmit}
+              onPress={handleSubmit}
             >
               <Text
                 style={[
@@ -172,7 +186,7 @@ const styles = StyleSheet.create({
   notice: {
     textAlign: 'center',
     fontFamily: 'Barlow',
-    fontSize: 18,
+    fontSize: 20,
   },
   loginBtn: {
     backgroundColor: '#f3b64e',
@@ -198,6 +212,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   input: {
-    paddingVertical: 10,
+    color: 'white'
   },
 });

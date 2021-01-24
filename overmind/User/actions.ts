@@ -5,7 +5,7 @@ export const resetUserState: Action<void, void> = ({state}) => {
   state.User.isLoggedIn = false;
 }
 
-export const setUserSession: Action<{email: string; token: string}, void> = ({state}, {email, token}) => {
+export const setLogin: Action<string, void> = ({state}, email) => {
   state.User.email = email;
-  state.User.session = token;
+  state.User.isLoggedIn = true;
 }
