@@ -8,12 +8,13 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {AuthStackParamList} from '../types';
 import {Formik} from 'formik';
 import {LoginSchema} from '../assets/validationSchemas';
+import {WindMillLoading} from 'react-loadingg';
 
 type NavProp = StackNavigationProp<AuthStackParamList, 'Login'>;
 
 
 function Login({navigation}: {navigation: NavProp}) {
-  const [localLoggedIn, setLocalLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [hidePassword, setHidePassword] = useState(true);
 
   const GlobalActions = useOvermind().actions.User;
@@ -23,7 +24,8 @@ function Login({navigation}: {navigation: NavProp}) {
   };
 
   const onLogin = async ({email, password}: {email: string, password: string}) => {
-    await fetch("https://reqres.in/api/login", {
+    setIsLoading(true);
+    fetch("https://reqres.in/api/login", {
       method: 'POST',
       cache: 'no-store',
       headers: {
@@ -31,10 +33,10 @@ function Login({navigation}: {navigation: NavProp}) {
       },
       body: JSON.stringify({email: email, password: password})
     })
-      .then(async (response) => {
+      .then((response) => {
         if (response.status === 200) {
-          await AsyncStorage.setItem('isLoggedIn', 'true')
-          await AsyncStorage.setItem('email', email)
+          AsyncStorage.setItem('isLoggedIn', 'true')
+          AsyncStorage.setItem('email', email)
             .then(() => {GlobalActions.setLogin(email)})
         }
       })
@@ -57,8 +59,11 @@ function Login({navigation}: {navigation: NavProp}) {
   useFocusEffect(
     React.useCallback(() => {
       checkUserLogin();
-    }, [localLoggedIn])
+      setIsLoading(false);
+    }, [])
   )
+
+
 
   return (
     <Formik
@@ -75,21 +80,14 @@ function Login({navigation}: {navigation: NavProp}) {
             {
               width: '100%',
               alignSelf: 'center',
+
             },
             styles.loginScreen,
           ]}
           behavior="padding"
         >
-          <View style={styles.loginForm}>
-            <Image
-              style={{
-                alignSelf: 'center',
-                // width: 250,
-                // height: 90,
-                // marginVertical: 10,
-              }}
-              source={{uri: 'https://uploads-ssl.webflow.com/5e8630fc4ab55c2dd2699e05/5e86337294f87c645a70134a_prokeep-lockup-reversed.svg'}}
-            />
+          {isLoading && <WindMillLoading />}
+          <View style={[styles.loginForm, {opacity: isLoading ? 0 : 1}]}>
             <Text style={[styles.notice, {color: 'white', marginBottom: 10}]}>
               Login
             </Text>

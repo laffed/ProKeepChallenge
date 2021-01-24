@@ -1,5 +1,6 @@
 import {NavigationContainer, DefaultTheme, DarkTheme} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import {View, StyleSheet, Image, StatusBar, Text, TouchableOpacity} from 'react-native'
 import * as React from 'react';
 import {ColorSchemeName} from 'react-native';
 import NotFoundScreen from '../screens/NotFoundScreen';
@@ -10,11 +11,11 @@ import Profile from '../screens/Profile';
 import {AppStackParamList, AuthStackParamList, RootStackParamList} from '../types';
 import BottomTabNavigator from './BottomTabNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useOvermind} from '../overmind';
 
 export default function Navigation({colorScheme}: {colorScheme: ColorSchemeName}) {
   const GlobalState = useOvermind().state.User;
-
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
@@ -33,10 +34,48 @@ const AppStack = createStackNavigator<AppStackParamList>();
 const AuthStack = createStackNavigator<AuthStackParamList>();
 
 function AppNavigator() {
+  const GlobalActions = useOvermind().actions.User;
+
+  const onLogout = async () => {
+    await AsyncStorage.setItem('isLoggedIn', 'false');
+    await AsyncStorage.setItem('email', '')
+      .then(() => {
+        GlobalActions.resetUserState();
+      })
+  }
 
   return (
     <AppStack.Navigator>
-      <AppStack.Screen name='Profile' component={Profile} />
+      <AppStack.Screen name='Profile' component={Profile}
+        options={{
+          headerRight: (props) => (
+            <View style={{flexDirection: 'row'}}>
+              <TouchableOpacity onPress={() => {
+                onLogout();
+              }}>
+                <Text
+                  style={[
+                    {
+                      color: 'white',
+                      marginRight: 30,
+                      fontWeight: 'bold',
+                      borderBottomWidth: 0,
+                      fontFamily: 'Barlow'
+                    },
+                  ]}
+                >
+                  Logout
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ),
+          headerStyle: {
+            backgroundColor: '#132c41',
+            justifyContent: 'center'
+          },
+          headerTitleStyle: {color: 'white', fontFamily: 'Barlow'}
+        }}
+      />
     </AppStack.Navigator>
   );
 }
