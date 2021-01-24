@@ -1,11 +1,11 @@
 type UserState = {
-  displayName: string;
   email: string;
   isLoggedIn: boolean;
+  session: string;
 }
 
 export const state: UserState = {
-  displayName: '',
   email: '',
-  isLoggedIn: false
+  isLoggedIn: false,
+  session: ''
 }

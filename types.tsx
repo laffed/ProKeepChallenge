@@ -1,3 +1,12 @@
+export type AppStackParamList = {
+  Profile: undefined;
+}
+
+export type AuthStackParamList = {
+  Login: undefined;
+  Signup: undefined;
+}
+
 export type RootStackParamList = {
   Root: undefined;
   NotFound: undefined;

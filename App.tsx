@@ -10,7 +10,7 @@ import {Provider} from 'overmind-react';
 import {createOvermind} from 'overmind';
 
 const overmind = createOvermind(config, {
-  devtools: '192.168.1.66:3031'
+  devtools: '192.168.1.66:19000'
 });
 
 export default function App() {
