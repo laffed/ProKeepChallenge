@@ -16,6 +16,7 @@ type NavProp = StackNavigationProp<AuthStackParamList, 'Login'>;
 function Login({navigation}: {navigation: NavProp}) {
   const [isLoading, setIsLoading] = useState(false);
   const [hidePassword, setHidePassword] = useState(true);
+  const [error, setError] = useState('');
 
   const GlobalActions = useOvermind().actions.User;
 
@@ -38,6 +39,9 @@ function Login({navigation}: {navigation: NavProp}) {
           AsyncStorage.setItem('isLoggedIn', 'true')
           AsyncStorage.setItem('email', email)
             .then(() => {GlobalActions.setLogin(email)})
+        } else {
+          setError('Invalid Login');
+          setIsLoading(false);
         }
       })
   }
@@ -59,6 +63,7 @@ function Login({navigation}: {navigation: NavProp}) {
   useFocusEffect(
     React.useCallback(() => {
       checkUserLogin();
+      setError('');
       setIsLoading(false);
     }, [])
   )
@@ -88,14 +93,15 @@ function Login({navigation}: {navigation: NavProp}) {
         >
           {isLoading && <WindMillLoading />}
           <View style={[styles.loginForm, {opacity: isLoading ? 0 : 1}]}>
-            <Text style={[styles.notice, {color: 'white', marginBottom: 10}]}>
+            <Text style={[styles.notice, {color: 'white', marginBottom: 10, opacity: error.length > 0 ? 0 : 1}]}>
               Login
             </Text>
             <Text style={[styles.notice, {color: 'red'}]}>
-              {touched.email && errors.email}
+              {error.length > 0 && error}
+              {error.length === 0 && touched.email && errors.email}
             </Text>
             <Text style={[styles.notice, {color: 'red'}]}>
-              {touched.password && errors.password}
+              {error.length === 0 && touched.password && errors.password}
             </Text>
             <View style={{marginVertical: 20}}>
               <Input
