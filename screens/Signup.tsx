@@ -1,5 +1,5 @@
 import React from 'react'
-import {View, Text, StyleSheet, Image, Alert, KeyboardAvoidingView, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import {Input, Icon} from 'react-native-elements';
 import {useOvermind} from '../overmind';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -43,7 +43,7 @@ function Signup({navigation}: {navigation: NavProp}) {
       onSubmit={values => {onSignup(values)}}
     >
       {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
-        <KeyboardAvoidingView
+        <View
           style={[
             {
               width: '100%',
@@ -51,18 +51,9 @@ function Signup({navigation}: {navigation: NavProp}) {
             },
             styles.loginScreen,
           ]}
-          behavior="padding"
         >
           <View style={styles.loginForm}>
-            <Image
-              style={{
-                alignSelf: 'center',
-                // width: 250,
-                // height: 90,
-              }}
-              source={{uri: 'https://uploads-ssl.webflow.com/5e8630fc4ab55c2dd2699e05/5e86337294f87c645a70134a_prokeep-lockup-reversed.svg'}}
-            />
-            <Text style={[styles.notice, {color: 'white', marginBottom: 10}]}>
+            <Text style={[styles.notice, {color: 'white'}]}>
               Signup into the Greatest App in the World!
             </Text>
             <Text style={[styles.notice, {color: 'red'}]}>
@@ -139,7 +130,7 @@ function Signup({navigation}: {navigation: NavProp}) {
           </Text>
             </TouchableOpacity>
           </View>
-        </KeyboardAvoidingView>
+        </View>
       )}
     </Formik >
   );

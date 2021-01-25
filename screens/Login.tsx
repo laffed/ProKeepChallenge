@@ -1,6 +1,6 @@
 import React, {useState, useCallback} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
-import {View, Text, StyleSheet, Image, Alert, KeyboardAvoidingView, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Input, Icon} from 'react-native-elements';
 import {useOvermind} from '../overmind';
@@ -8,7 +8,6 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {AuthStackParamList} from '../types';
 import {Formik} from 'formik';
 import {LoginSchema} from '../assets/validationSchemas';
-import {WindMillLoading} from 'react-loadingg';
 
 type NavProp = StackNavigationProp<AuthStackParamList, 'Login'>;
 
@@ -78,7 +77,7 @@ function Login({navigation}: {navigation: NavProp}) {
       onSubmit={values => {onLogin(values)}}
     >
       {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
-        <KeyboardAvoidingView
+        <View
           style={[
             {
               width: '100%',
@@ -87,9 +86,7 @@ function Login({navigation}: {navigation: NavProp}) {
             },
             styles.loginScreen,
           ]}
-          behavior="padding"
         >
-          {isLoading && <WindMillLoading />}
           <View style={[styles.loginForm, {opacity: isLoading ? 0 : 1}]}>
             <Text style={[styles.notice, {color: 'white', marginBottom: 10, opacity: error.length > 0 ? 0 : 1}]}>
               Login
@@ -178,7 +175,7 @@ function Login({navigation}: {navigation: NavProp}) {
             </Text>
             </TouchableOpacity>
           </View>
-        </KeyboardAvoidingView>
+        </View>
       )}
     </Formik >
   );

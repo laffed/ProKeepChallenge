@@ -3,13 +3,10 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {View, StyleSheet, Image, StatusBar, Text, TouchableOpacity} from 'react-native'
 import * as React from 'react';
 import {ColorSchemeName} from 'react-native';
-import NotFoundScreen from '../screens/NotFoundScreen';
-import Home from '../screens/Home';
 import Login from '../screens/Login';
 import Signup from '../screens/Signup';
 import Profile from '../screens/Profile';
 import {AppStackParamList, AuthStackParamList, RootStackParamList} from '../types';
-import BottomTabNavigator from './BottomTabNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useOvermind} from '../overmind';
@@ -22,7 +19,6 @@ export default function Navigation({colorScheme}: {colorScheme: ColorSchemeName}
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       {GlobalState.isLoggedIn && <AppNavigator />}
       {!GlobalState.isLoggedIn && <AuthNavigator />}
-      {/* <RootNavigator /> */}
     </NavigationContainer>
   );
 }
@@ -90,11 +86,3 @@ function AuthNavigator() {
   );
 }
 
-function RootNavigator() {
-  return (
-    <RootStack.Navigator screenOptions={{headerShown: false}}>
-      <RootStack.Screen name="Root" component={BottomTabNavigator} />
-      <RootStack.Screen name="NotFound" component={NotFoundScreen} options={{title: 'Oops!'}} />
-    </RootStack.Navigator>
-  );
-}
